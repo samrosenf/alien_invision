@@ -1,5 +1,4 @@
 import pygame
-from pygame.display import set_caption
 from pygame.sprite import Sprite
 
 class Bullet(Sprite):
