@@ -96,6 +96,7 @@ class AlienInvasion:
         if self.stats.ships_left > 1:        
             # Decrement ships left.
             self.stats.ships_left -= 1
+            self.sb.prep_ships()
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
@@ -173,16 +174,17 @@ class AlienInvasion:
         self.stats.game_active = True
         self.sb.prep_score()
         self.sb.prep_level()
+        self.sb.prep_ships()
 
-            # Get rid of any remaining aliens and bullets.
+        # Get rid of any remaining aliens and bullets.
         self.aliens.empty()
         self.bullets.empty()
 
-            # Create a new fleet and center the ship.
+        # Create a new fleet and center the ship.
         self._create_fleet()
         self.ship.center_ship()
 
-            # Hide the mouse cursor.
+        # Hide the mouse cursor.
         pygame.mouse.set_visible(False)
 
     def _check_keyup_events(self, event):
