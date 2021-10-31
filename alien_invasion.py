@@ -33,7 +33,17 @@ class AlienInvasion:
         self._create_fleet()
 
         # Make the play button
-        self.play_button = Button(self, "Play")
+        self._make_buttons()
+        
+
+    def _make_buttons(self):
+        self.easy_level_button = Button(self, "Easy")
+        self.medium_level_button = Button(self, "Medium")
+        self.medium_level_button.rect.midtop = self.easy_level_button.rect.midbottom
+        self.medium_level_button.update_text_center()
+        self.hard_level_button = Button(self, "Hard")
+        self.hard_level_button.rect.midtop = self.medium_level_button.rect.midbottom
+        self.hard_level_button.update_text_center()
 
     def run_game(self):
         """Start the main loop for the game."""
@@ -124,7 +134,9 @@ class AlienInvasion:
 
         # Draw the play button if the game is inactive.
         if not self.stats.game_active:
-            self.play_button.draw_button()
+            self.easy_level_button.draw_button()
+            self.medium_level_button.draw_button()
+            self.hard_level_button.draw_button()
 
         pygame.display.flip()
 
@@ -142,15 +154,25 @@ class AlienInvasion:
             
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
-                self._check_play_button(mouse_pos)
+                self._check_play_buttons(mouse_pos)
 
-    def _check_play_button(self, mouse_pos):
+
+    def _check_play_buttons(self, mouse_pos):
         """Start a new game when the player clicks Play."""
-        button_clicked = self.play_button.rect.collidepoint(mouse_pos)
-        if button_clicked and not self.stats.game_active:
+        easy_button_clicked = self.easy_level_button.rect.collidepoint(mouse_pos)
+        medium_button_clicked = self.medium_level_button.rect.collidepoint(mouse_pos)
+        hard_button_clicked = self.hard_level_button.rect.collidepoint(mouse_pos)
+
+        if not self.stats.game_active:
             # Reset the game settings.
-            self.settings.initialize_dynamic_settings()
+            if easy_button_clicked:
+                self.settings.initialize_dynamic_settings(1)
+            elif medium_button_clicked:
+                self.settings.initialize_dynamic_settings(2)
+            elif hard_button_clicked:
+                self.settings.initialize_dynamic_settings(3)
             self._start_game()
+
 
     def _start_game(self):
         # Reset the game statistics.
