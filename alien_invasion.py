@@ -76,6 +76,7 @@ class AlienInvasion:
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()
+            self.sb.check_high_score()
 
     def _check_aliens_bottom(self):
         """Check if any aliens have reached the bottom of the screen."""
