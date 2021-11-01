@@ -14,6 +14,7 @@ class Ship(Sprite):
 
         # Load the ship image and get its rect.
         self.image = pygame.image.load('images/ship.png')
+        self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
 
         self.center_ship()

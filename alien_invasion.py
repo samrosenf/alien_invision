@@ -70,7 +70,7 @@ class AlienInvasion:
         # Check for any bullets that have hit aliens.
         #   If so, get rid of the bullet and the alien.
         collisions = pygame.sprite.groupcollide(
-            self.bullets, self.aliens, True, True)
+            self.bullets, self.aliens, True, True, pygame.sprite.collide_mask)
         if not self.aliens:
             self._start_new_level()
 
@@ -116,7 +116,7 @@ class AlienInvasion:
 
             # Create a new fleet and center the ship.
             self._create_fleet()
-            self.ship.center_ship()           
+            self.ship.center_ship()
 
             # Pause.
             sleep(0.5)
@@ -130,7 +130,6 @@ class AlienInvasion:
         self.stats.ships_left -= 1
         self.sb.prep_ships()
         self.sound.play_ship_hit_sound()
-        
 
     def _update_aliens(self):
         """
@@ -141,7 +140,8 @@ class AlienInvasion:
         self.aliens.update()
 
         # Look for alien-ship collisions.
-        if pygame.sprite.spritecollideany(self.ship, self.aliens):
+        if pygame.sprite.spritecollideany(self.ship, self.aliens,
+                                          pygame.sprite.collide_mask):
             self._ship_hit()
 
         # Look for aliens hitting the bottom of the screen.
