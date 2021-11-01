@@ -26,6 +26,9 @@ class Settings:
         # How quickly the alien point values increase
         self.score_scale = 1.5
 
+        # Highscore file
+        self.highscore_file = 'highscore.txt'
+
         self.initialize_dynamic_settings()
 
     def initialize_dynamic_settings(self):
