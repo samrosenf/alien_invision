@@ -8,7 +8,8 @@ class Settings:
         # Screen settings
         self.screen_width = 1200
         self.screen_height = 800
-        self.bg = pygame.image.load("images/space_bg.jpg")
+
+        # Game settings
         self.FPS = 60
 
         # Ship settings
@@ -33,6 +34,9 @@ class Settings:
         self.highscore_file = 'highscore.txt'
 
         self.initialize_dynamic_settings()
+
+    def load_bg(self):
+        self.bg = pygame.image.load("images/space_bg.jpg").convert()
 
     def initialize_dynamic_settings(self):
         """Initialize settings that change throghout the game."""

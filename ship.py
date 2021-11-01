@@ -13,7 +13,7 @@ class Ship(Sprite):
         self.screen_rect = ai_game.screen.get_rect()
 
         # Load the ship image and get its rect.
-        self.image = pygame.image.load('images/ship.png')
+        self.image = pygame.image.load('images/ship.png').convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
 

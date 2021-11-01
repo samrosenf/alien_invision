@@ -24,6 +24,7 @@ class AlienInvasion:
         self.screen = pygame.display.set_mode((
             self.settings.screen_width, self.settings.screen_height))
         pygame.display.set_caption('Alien Invasion')
+        self.settings.load_bg()
 
         # Create an instance to store the game statistics & a scoreboard.
         self.stats = GameStats(self)
