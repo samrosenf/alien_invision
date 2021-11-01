@@ -74,6 +74,7 @@ class AlienInvasion:
             self._start_new_level()
 
         if collisions:
+            self.sound.play_boom_sound()
             for aliens in collisions.values():
                 self.stats.score += self.settings.alien_points * len(aliens)
             self.sb.prep_score()

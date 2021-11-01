@@ -6,6 +6,13 @@ class Sound:
     def __init__(self):
         pygame.mixer.init()
         pygame.mixer.music.load('sounds/bg_music.ogg')
-        pygame.mixer.music.play()
+        # Play the music indefinately
+        pygame.mixer.music.play(loops=-1)
         # print(pygame.mixer.music.get_volume())
         pygame.mixer.music.set_volume(0.5)
+
+        self.boom_sound = pygame.mixer.Sound('sounds/explosion.wav')
+
+    
+    def play_boom_sound(self):
+        self.boom_sound.play()
