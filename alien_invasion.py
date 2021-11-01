@@ -43,8 +43,9 @@ class AlienInvasion:
 
     def run_game(self):
         """Start the main loop for the game."""
+        clock = pygame.time.Clock()
         while True:
-            pygame.time.wait(10)
+            clock.tick(self.settings.FPS)
             self._check_events()
             if self.stats.game_active:
                 self.ship.update()

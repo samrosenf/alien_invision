@@ -9,6 +9,7 @@ class Settings:
         self.screen_width = 1200
         self.screen_height = 800
         self.bg = pygame.image.load("images/space_bg.jpg")
+        self.FPS = 150
 
         # Ship settings
         self.ship_limit = 3
