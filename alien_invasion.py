@@ -76,6 +76,8 @@ class AlienInvasion:
             self.sb.check_high_score()
 
     def _start_new_level(self):
+        # Recenter Ship before new level
+        self.ship.center_ship()
         # Destory existing bullets and create new fleet.
         self.bullets.empty()
         self._create_fleet()
