@@ -16,7 +16,7 @@ class Scoreboard:
         self.stats = ai_game.stats
 
         # Font settings for scoring information.
-        self.text_color = (30, 30, 30)
+        self.text_color = (215, 215, 215)
         self.font = pygame.font.SysFont(None, 48)
 
         # Prepare the initial score image.
