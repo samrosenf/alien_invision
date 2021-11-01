@@ -48,7 +48,7 @@ class Scoreboard:
                                                  self.text_color)
 
         # Display the score at the top right of the screen.
-        self.high_score_rect = self.score_image.get_rect()
+        self.high_score_rect = self.high_score_image.get_rect()
         self.high_score_rect.centerx = self.screen_rect.centerx
         self.high_score_rect.top = self.score_rect.top
 

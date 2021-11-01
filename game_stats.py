@@ -22,6 +22,7 @@ class GameStats:
         self.level = 1
 
     def load_high_score_from_file(self):
+        self.high_score = 0
         filename = self.settings.highscore_file
         # Check if high score file exist
         if os.path.isfile(filename):
