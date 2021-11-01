@@ -6,6 +6,7 @@ import pygame
 from settings import Settings
 from game_stats import GameStats
 from Scoreboard import Scoreboard
+from sound import Sound
 from button import Button
 from ship import Ship
 from bullet import Bullet
@@ -31,6 +32,9 @@ class AlienInvasion:
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
         self.aliens = pygame.sprite.Group()
+
+        # Add music to the game.
+        self.sound = Sound()
 
         self._create_fleet()
 
