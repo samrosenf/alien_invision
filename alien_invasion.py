@@ -108,9 +108,7 @@ class AlienInvasion:
     def _ship_hit(self):
         """Respond to the ship being hit by an alien."""
         if self.stats.ships_left > 1:
-            # Decrement ships left.
-            self.stats.ships_left -= 1
-            self.sb.prep_ships()
+            self._lose_ship()
 
             # Get rid of any remaining aliens and bullets.
             self.aliens.empty()
@@ -118,13 +116,21 @@ class AlienInvasion:
 
             # Create a new fleet and center the ship.
             self._create_fleet()
-            self.ship.center_ship()
+            self.ship.center_ship()           
 
             # Pause.
             sleep(0.5)
         else:
+            self._lose_ship()
             self.stats.game_active = False
             pygame.mouse.set_visible(True)
+
+    def _lose_ship(self):
+        # Decrement ships left.
+        self.stats.ships_left -= 1
+        self.sb.prep_ships()
+        self.sound.play_ship_hit_sound()
+        
 
     def _update_aliens(self):
         """
