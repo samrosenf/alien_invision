@@ -70,29 +70,39 @@ class AlienInvasion:
     def _check_bullet_alien_collisions(self):
         # Check for any bullets that have hit aliens.
         #   If so, get rid of the bullet and the alien.
-        collisions = pygame.sprite.groupcollide(
-            self.bullets, self.aliens, True, True, pygame.sprite.collide_mask)
         if not self.aliens:
             self._start_new_level()
+        collisions = pygame.sprite.groupcollide(
+            self.bullets, self.aliens, True, False, pygame.sprite.collide_mask)
 
         if collisions:
             self.sound.play_boom_sound()
             for aliens in collisions.values():
-                self.stats.score += self.settings.alien_points * len(aliens)
+                for alien in aliens:
+                    # Alien has been hit, decreas one life of the alien
+                    alien.life -= 1
+                    if alien.life <= 0:
+                        # Update score and remove the alien
+                        self.stats.score += self.settings.alien_points * len(aliens)
+                        self.aliens.remove(alien) # remove the dead alien
+                    # Update the image according to its' life
+                    else:
+                        alien.load_image()
             self.sb.prep_score()
             self.sb.check_high_score()
 
     def _start_new_level(self):
         # Recenter Ship before new level
         self.ship.center_ship()
+        # Increase level.
+        self.stats.level += 1
+        self.stats.alien_level += 1
+        self.sb.prep_level()
+
         # Destory existing bullets and create new fleet.
         self.bullets.empty()
         self._create_fleet()
-        self.settings.increase_speed()
-
-        # Increase level.
-        self.stats.level += 1
-        self.sb.prep_level()
+        self.settings.increase_speed()        
 
         # Play level up sound
         self.sound.play_levelup_sound()
@@ -257,21 +267,23 @@ class AlienInvasion:
         # Determine the number of rows of aliens that fit on the screen.
         ship_height = self.ship.rect.height
         available_space_y = (self.settings.screen_height -
-                             (6 * alien_height) - 2 * ship_height)
+                             (3 * alien_height) - 2 * ship_height)
         number_rows = int(available_space_y // (1.5 * alien_height))
 
         # Create the full fleet of aliens
         for row_number in range(number_rows):
             for alien_number in range(number_aliens_x):
-                self._create_alien(alien_number, row_number)
+                self._create_alien(alien_number, row_number, self.stats.level)
 
-    def _create_alien(self, alien_number, row_number):
+    def _create_alien(self, alien_number, row_number, level):
         # Create an alien and place it in the row.
         ship_height = self.ship.rect.height
         alien = Alien(self)
         alien_width, alien_height = alien.rect.size
-        alien.x = alien_width + int(1.5 * alien_width * alien_number)
-        alien.rect.y = ship_height + alien_height // 2 + 2 * alien_height * row_number
+        # Place the alien in the right position
+        alien.x = alien_width + 1.5 * alien_width * alien_number
+        alien.y = ship_height + alien_height // 2 + alien_height * row_number
+        alien.rect.y = alien.y
         alien.rect.x = alien.x
         self.aliens.add(alien)
 
@@ -285,7 +297,7 @@ class AlienInvasion:
     def _change_fleet_direction(self):
         """Drop the entire fleet and change the fleet's direction."""
         for alien in self.aliens.sprites():
-            alien.rect.y += self.settings.fleet_drop_speed
+            alien.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
 
 
