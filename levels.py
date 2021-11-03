@@ -25,9 +25,14 @@ def load_level_file(filepath):
             print("level file couldn't be parsed")
             data_level = [1 for _ in range(9)]
     else:
-        raise LevelFileError("the level file coudn't be found")
+        raise LevelFileError("the level file couldn't be found")
     return data_level
 
+def load_level_data(level):
+    """Returns the level data from the relevant csv file."""
+    filename = 'level_' + str(level) + '.csv'
+    filepath = os.path.join('levels', filename)
+    return load_level_file(filepath)
 
 def main():
     data_level = load_level_file('levels/demo_level.csv')

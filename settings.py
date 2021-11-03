@@ -11,12 +11,13 @@ class Settings:
 
         # Game settings
         self.FPS = 60
+        self.MAX_LEVEL = 4
 
         # Ship settings
         self.ship_limit = 3
 
         # Bullet settings
-        self.bullet_width = 3
+        self.bullet_width = 3000
         self.bullet_height = 15
         self.bullet_color = (224, 222, 58)
         self.bullets_allowed = 10
@@ -49,7 +50,8 @@ class Settings:
         self.fleet_direction = 1
 
         # Scoring
-        self.alien_points = 50
+        self.hit_points = 20
+        self.kill_points = 100
 
     def increase_speed(self):
         """Increase speed settings and alien point values."""

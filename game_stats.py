@@ -20,7 +20,7 @@ class GameStats:
         self.ships_left = self.settings.ship_limit
         self.score = 0
         self.level = 1
-        self.alien_level = 1
+        self.win_game = False
 
     def load_high_score_from_file(self):
         self.high_score = 0

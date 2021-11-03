@@ -27,6 +27,7 @@ class Scoreboard:
         self.prep_high_score()
         self.prep_level()
         self.prep_ships()
+        self.prep_winning_text()
 
     def prep_score(self):
         """Turn the score into a rendered image."""
@@ -62,6 +63,19 @@ class Scoreboard:
         self.level_rect = self.level_image.get_rect()
         self.level_rect.right = self.score_rect.right
         self.level_rect.top = self.score_rect.bottom + 10
+
+    def prep_winning_text(self):
+        """Render the winning text."""
+        winning_text = "Congratulation! You Won!"
+        self.winning_image = self.font.render(winning_text, True,
+                                              self.text_color)
+
+        self.winning_rect = self.winning_image.get_rect()
+        self.winning_rect.centerx = self.ai_game.play_button.rect.centerx
+        self.winning_rect.bottom = self.ai_game.play_button.rect.top - 200
+
+    def show_winning_text(self):
+        self.screen.blit(self.winning_image, self.winning_rect)
 
     def show_score(self):
         """Draw score and level to the screen."""
