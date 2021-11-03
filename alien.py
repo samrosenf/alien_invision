@@ -34,23 +34,27 @@ class Alien(Sprite):
             return True
 
     def load_image(self):
-        """Load the right image depnded on the current level."""
-        image_color_dict = {
-            1: 'teal',
-            2: 'green',
-            3: 'purple',
-            4: 'orange'
-        }
-
         # Load the alien image and set its rect attritbute.
-        alien_color = image_color_dict.get(self.life, 'orange') # if level don't exist use orange
-        image_path = self._get_image_path(alien_color)
-        self.image = pygame.image.load(image_path).convert_alpha()
+        self.image = pygame.image.load(self._get_image_path()).convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
         self.rect.x = self.x
         self.rect.y = self.y
 
-    def _get_image_path(self, color):
-        image_file_name = color + '_alien_ship.png'
+    def _get_image_path(self):
+        """Load the right image depnded on the current level."""
+        image_color_dict = {
+            1: 'teal',
+            2: 'green',
+            3: 'purple',
+            4: 'blue',
+            5: 'grey',
+            6: 'orange',
+            7: 'yellow',
+            8: 'pink',
+            9: 'red',
+        }
+        alien_color = image_color_dict.get(
+            self.life, 'red')  # if level don't exist use red
+        image_file_name = alien_color + '_alien_ship.png'
         return os.path.join('images', image_file_name)
