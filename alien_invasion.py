@@ -78,15 +78,15 @@ class AlienInvasion:
         """Setup the new level."""
         # Increase level.
         self.stats.level += 1
-        self.sb.prep_level()
-        # self.settings.increase_speed()
-        # Play level up sound
-        self.sound.play_levelup_sound()
         if self.stats.level <= self.settings.MAX_LEVEL:
             self._setup_level()
+            # self.settings.increase_speed()
+            self.sb.prep_level()
+            self.sound.play_levelup_sound()
         else:
             self.stats.win_game = True
             self.stats.game_active = False
+            # Play win sound TODO
 
     def _setup_level(self):
         # Get rid of any remaining aliens and bullets.
@@ -151,7 +151,7 @@ class AlienInvasion:
                     if alien.life <= 0:
                         # Update score and remove the alien
                         self.stats.score += self.settings.kill_points * alien.level
-                        self.aliens.remove(alien) 
+                        self.aliens.remove(alien)
                     # Update the image according to the alien's life
                     else:
                         alien.load_image()
@@ -220,6 +220,7 @@ class AlienInvasion:
             # Draw winning
             if self.stats.win_game:
                 self.sb.show_winning_text()
+                pygame.mouse.set_visible(True)
 
         pygame.display.flip()
 
