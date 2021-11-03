@@ -6,6 +6,7 @@ import pygame
 from settings import Settings
 from game_stats import GameStats
 from scoreboard import Scoreboard
+from levels import load_level_file
 from sound import Sound
 from button import Button
 from ship import Ship
@@ -102,24 +103,26 @@ class AlienInvasion:
         number_aliens_x = int(available_space_x // (1.5 * alien_width))
 
         # Determine the number of rows of aliens that fit on the screen.
-        ship_height = self.ship.rect.height
-        available_space_y = (self.settings.screen_height -
-                             (3 * alien_height) - 2 * ship_height)
-        number_rows = int(available_space_y // (1.5 * alien_height))
+        available_space_y = (self.settings.screen_height 
+                            - (3 * alien_height) - self.settings.fleet_y_start)
+        print(available_space_y)
+        number_rows = int(available_space_y // (alien_height))
+
+        level_data = load_level_file('levels/demo_level.csv')
 
         # Create the full fleet of aliens
-        for row_number in range(number_rows):
-            for alien_number in range(number_aliens_x):
-                self._create_alien(alien_number, row_number)
+        for y_idx, row in enumerate(level_data):
+            for x_idx, level in enumerate(row):
+                self._create_alien(x_idx, y_idx, level)
 
-    def _create_alien(self, alien_number, row_number):
+    def _create_alien(self, alien_number, row_number, level):
         # Create an alien and place it in the row.
         ship_height = self.ship.rect.height
-        alien = Alien(self)
+        alien = Alien(self, level)
         alien_width, alien_height = alien.rect.size
         # Place the alien in the right position
         alien.x = alien_width + 1.5 * alien_width * alien_number
-        alien.y = ship_height + alien_height // 2 + alien_height * row_number
+        alien.y = self.settings.fleet_y_start + alien_height * row_number
         alien.rect.y = alien.y
         alien.rect.x = alien.x
         self.aliens.add(alien)

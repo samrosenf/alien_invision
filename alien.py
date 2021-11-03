@@ -7,17 +7,19 @@ from pygame.sprite import Sprite
 class Alien(Sprite):
     """A class to represent a single alien in the fleet."""
 
-    def __init__(self, ai_game):
+    def __init__(self, ai_game, level=1):
         """Initialize the alien and set its starting position."""
         super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.stats = ai_game.stats
 
+        # Setup life and lives of the alien
         self.x, self.y = 0, 0
+        self.level = level
+        self.life = level
 
         # Load image according to the alien level
-        self.life = self.stats.alien_level
         self.load_image()
 
     def update(self):
