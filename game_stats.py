@@ -21,6 +21,7 @@ class GameStats:
         self.score = 0
         self.level = 1
         self.win_game = False
+        self.weapon_power = 1
 
     def load_high_score_from_file(self):
         self.high_score = 0

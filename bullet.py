@@ -22,9 +22,19 @@ class Bullet(Sprite):
 
 
 class PlayerBullet(Bullet):
+    bullet_level_color = {
+        1: (224, 222, 58),
+        2: (255, 46, 204),
+        3: (188, 231, 253),
+        4: (82, 209, 220),
+        5: (175, 59, 110),
+        6: (43, 151, 32),
+        7: (250, 130, 76),
+    }
     def __init__(self, ai_game):
         super().__init__(ai_game)
-        self.color = self.settings.player_bullet_color
+        self.power = min(ai_game.stats.weapon_power, 7)
+        self.color = PlayerBullet.bullet_level_color[self.power]
         # Put the bullet so it's coming out the Player ship.
         self.rect.midtop = ai_game.ship.rect.midtop
         # Store the bullet's position as a decimal value.

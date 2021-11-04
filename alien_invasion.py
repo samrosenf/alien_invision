@@ -125,7 +125,6 @@ class AlienInvasion:
     def _update_powerups(self):
         """Update the powerups location and if they were taken by the player."""
         self.powerups.update()
-        # TODO handle power and player interaction
         collisions = pygame.sprite.spritecollide(self.ship, self.powerups,
                                                  False, pygame.sprite.collide_mask)
         for powerup in collisions:
@@ -134,7 +133,7 @@ class AlienInvasion:
                     self.stats.ships_left += 1
                     self.sb.prep_ships()
             elif isinstance(powerup, WeaponPowerUp):
-                print("weapon")
+                self.stats.weapon_power += 1
             elif isinstance(powerup, ShieldPowerUp):
                 self.ship.create_shield()
             self.powerups.remove(powerup)
@@ -182,16 +181,16 @@ class AlienInvasion:
         """"Check for any bullets that have hit enemies.
            If so, update enemy life, and remove if dead."""
         collisions = pygame.sprite.groupcollide(
-            self.ship_bullets, self.enemies, True, False, pygame.sprite.collide_mask)
+            self.ship_bullets, self.enemies, False, False, pygame.sprite.collide_mask)
 
         if collisions:
             self.sound.play_boom_sound()
-            for enemies in collisions.values():
+            for bullet, enemies in collisions.items():
                 # Every shot gain points.
                 self.stats.score += self.settings.hit_points * len(enemies)
                 for enemy in enemies:
                     # Enemy has been hit, decreas one life of the enemy
-                    enemy.life -= 1
+                    enemy.life -= bullet.power
                     if enemy.life <= 0:
                         # Update score and remove the enemy
                         self.stats.score += self.settings.kill_points * enemy.level
