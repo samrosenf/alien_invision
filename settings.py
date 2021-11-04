@@ -12,7 +12,7 @@ class Settings:
 
         # Game settings
         self.FPS = 60
-        self.MAX_LEVEL = 4
+        self.MAX_LEVEL = 2
 
         # Ship settings
         self.ship_limit = 3
@@ -41,8 +41,8 @@ class Settings:
         # Event times
         self.bullet_gen_time = 2000  # in ms
         self.bullet_rand_gen_time = 200  # in ms
-        self.powerup_gen_time = int(4E4)  # in ms
-        self.powerup_rand_gen_time = int(2E3)  # in ms
+        self.powerup_gen_time = int(1E3)  # in ms
+        self.powerup_rand_gen_time = int(1E1)  # in ms
 
         # Powerup settings
         self.powerup_speed = 1.1

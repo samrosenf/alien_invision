@@ -70,6 +70,8 @@ class AlienInvasion:
         self.stats.game_active = True
         self.sb.prep_images()
         self._setup_level()
+        # Remove old powerups only with new game
+        self.powerups.empty()
 
         # Hide the mouse cursor.
         pygame.mouse.set_visible(False)
@@ -134,14 +136,13 @@ class AlienInvasion:
             elif isinstance(powerup, WeaponPowerUp):
                 print("weapon")
             elif isinstance(powerup, ShieldPowerUp):
-                print("weapon")
+                self.ship.create_shield()
             self.powerups.remove(powerup)
 
         # Remove powerups that are out of the screen.
         for powerup in self.powerups.copy():
             if powerup.rect.top >= self.settings.screen_height:
                 self.powerups.remove(powerup)
-        
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets"""
@@ -166,9 +167,16 @@ class AlienInvasion:
 
     def _check_enemy_bullets_ship_collisions(self):
         """Check if enemy bullets hit the ship"""
-        if pygame.sprite.spritecollideany(self.ship, self.enemies_bullets,
-                                          pygame.sprite.collide_mask):
-            self._ship_hit()
+        bullet_hit = pygame.sprite.spritecollideany(self.ship, self.enemies_bullets,
+                                                    pygame.sprite.collide_mask)
+        if bullet_hit:
+            if self.ship.shield:
+                # Remove Shield
+                self.ship.remove_shield()
+                # Remove the bullet
+                self.enemies_bullets.remove(bullet_hit)
+            else:
+                self._ship_hit()
 
     def _check_player_bullets_enemy_collisions(self):
         """"Check for any bullets that have hit enemies.
@@ -231,9 +239,16 @@ class AlienInvasion:
         self.enemies.update()
 
         # Look for enemy-ship collisions.
-        if pygame.sprite.spritecollideany(self.ship, self.enemies,
-                                          pygame.sprite.collide_mask):
-            self._ship_hit()
+        enemy_collided = pygame.sprite.spritecollideany(self.ship, self.enemies,
+                                          pygame.sprite.collide_mask)
+        if enemy_collided:
+            if self.ship.shield:
+                # Remove shield
+                self.ship.remove_shield()
+                # Remove enemy
+                self.enemies.remove(enemy_collided)
+            else:
+                self._ship_hit()
 
         # Look for enemies hitting the bottom of the screen.
         self._check_enemies_at_bottom()

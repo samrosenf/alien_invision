@@ -16,6 +16,7 @@ class Ship(Sprite):
         self.image = pygame.image.load('images/ship.png').convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
+        self.shield = False
 
         self.center_ship()
 
@@ -44,6 +45,26 @@ class Ship(Sprite):
     def blitme(self):
         """Draw the ship at its current location."""
         self.screen.blit(self.image, self.rect)
+
+    def create_shield(self):
+        old_rect_center = self.rect.center
+        self.image = pygame.image.load('images/ship_shielded.png').convert_alpha()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.center = old_rect_center
+        self.x = self.rect.x
+        self.y = self.rect.y
+        self.shield = True
+
+    def remove_shield(self):
+        old_rect_center = self.rect.center
+        self.image = pygame.image.load('images/ship.png').convert_alpha()
+        self.mask = pygame.mask.from_surface(self.image)
+        self.rect = self.image.get_rect()
+        self.rect.center = old_rect_center
+        self.x = self.rect.x
+        self.y = self.rect.y
+        self.shield = False
 
     def center_ship(self):
         """Center the ship on the screen."""
