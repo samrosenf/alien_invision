@@ -198,6 +198,7 @@ class AlienInvasion:
                     # Update the image according to the enemy's life
                     else:
                         enemy.update_image()
+                self.ship_bullets.remove(bullet)
             self.sb.prep_score()
             self.sb.check_high_score()
 
