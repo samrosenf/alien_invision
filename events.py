@@ -18,6 +18,11 @@ class Events:
 
     def __init__(self, ai_game):
         self.settings = ai_game.settings
+
         self.enemy_shooting = Event(self.settings.enemy_shooting_id)
         self.enemy_shooting.set_timer(
             self.settings.bullet_gen_time, self.settings.bullet_rand_gen_time)
+
+        self.powerup_drop = Event(self.settings.powerup_id)
+        self.powerup_drop.set_timer(
+            self.settings.powerup_gen_time, self.settings.powerup_rand_gen_time)

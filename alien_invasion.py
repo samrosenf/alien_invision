@@ -13,6 +13,7 @@ from sound import Sound
 from button import Button
 from ship import Ship
 from bullet import PlayerBullet, EnemyBullet
+from powerup import LifePowerUp, WeaponPowerUp, ShieldPowerUp
 from enemy import Enemy
 
 
@@ -41,6 +42,7 @@ class AlienInvasion:
         self.ship_bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
         self.enemies_bullets = pygame.sprite.Group()
+        self.powerups = pygame.sprite.Group()
 
         # Add music to the game.
         self.sound = Sound()
@@ -57,6 +59,7 @@ class AlienInvasion:
                 self.ship.update()
                 self._update_bullets()
                 self._update_enemies()
+                self._update_powerups()
 
             self._update_screen()
 
@@ -86,7 +89,7 @@ class AlienInvasion:
             # Play win sound TODO
 
     def _setup_level(self):
-        # Get rid of any remaining enemies and bullets.
+        # Get rid of any remaining enemies, bullets.
         self.enemies.empty()
         self.ship_bullets.empty()
         self.enemies_bullets.empty()
@@ -116,6 +119,29 @@ class AlienInvasion:
         enemy.rect.y = enemy.y
         enemy.rect.x = enemy.x
         self.enemies.add(enemy)
+
+    def _update_powerups(self):
+        """Update the powerups location and if they were taken by the player."""
+        self.powerups.update()
+        # TODO handle power and player interaction
+        collisions = pygame.sprite.spritecollide(self.ship, self.powerups,
+                                                 False, pygame.sprite.collide_mask)
+        for powerup in collisions:
+            if isinstance(powerup, LifePowerUp):
+                if self.stats.ships_left < self.settings.max_ships:
+                    self.stats.ships_left += 1
+                    self.sb.prep_ships()
+            elif isinstance(powerup, WeaponPowerUp):
+                print("weapon")
+            elif isinstance(powerup, ShieldPowerUp):
+                print("weapon")
+            self.powerups.remove(powerup)
+
+        # Remove powerups that are out of the screen.
+        for powerup in self.powerups.copy():
+            if powerup.rect.top >= self.settings.screen_height:
+                self.powerups.remove(powerup)
+        
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets"""
@@ -220,6 +246,7 @@ class AlienInvasion:
             bullet.draw_bullet()
         for bullet in self.enemies_bullets.sprites():
             bullet.draw_bullet()
+        self.powerups.draw(self.screen)
         self.enemies.draw(self.screen)
 
         # Draw the score information.
@@ -251,6 +278,7 @@ class AlienInvasion:
 
     def _check_events(self):
         """Respond to keypresses and mouse events"""
+        game_active = self.stats.game_active
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._save_high_score_and_exit()
@@ -261,8 +289,11 @@ class AlienInvasion:
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
-            elif event.type == self.events.enemy_shooting.id and self.stats.game_active:
+            elif event.type == self.events.enemy_shooting.id and game_active:
                 self._enemy_shoots()
+            elif event.type == self.events.powerup_drop.id and game_active:
+                power = random.choice([LifePowerUp, ShieldPowerUp, WeaponPowerUp])
+                self.powerups.add(power(self))
 
     def _enemy_shoots(self):
         selected_alien = random.choice(self.enemies.sprites())

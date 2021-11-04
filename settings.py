@@ -1,5 +1,6 @@
 import pygame
 
+
 class Settings:
     """A class to store all settings for Alien Invasion."""
 
@@ -15,6 +16,7 @@ class Settings:
 
         # Ship settings
         self.ship_limit = 3
+        self.max_ships = 6
 
         # Bullet settings
         self.bullet_width = 3
@@ -30,11 +32,20 @@ class Settings:
         # Enemy settings
         self.fleet_y_start = 90
         self.fleet_drop_speed = 10
-        self.bullet_gen_time = 2000 # in ms
-        self.bullet_rand_gen_time = 200 # in ms
 
         # Events IDs
         self.enemy_shooting_id = 1
+        self.powerup_id = 2
+
+
+        # Event times
+        self.bullet_gen_time = 2000  # in ms
+        self.bullet_rand_gen_time = 200  # in ms
+        self.powerup_gen_time = int(4E4)  # in ms
+        self.powerup_rand_gen_time = int(2E3)  # in ms
+
+        # Powerup settings
+        self.powerup_speed = 1.1
 
         # How quickly the game speeds up
         self.speedup_scale = 1.2
