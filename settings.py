@@ -11,7 +11,7 @@ class Settings:
 
         # Game settings
         self.FPS = 60
-        self.MAX_LEVEL = 2
+        self.MAX_LEVEL = 4
 
         # Ship settings
         self.ship_limit = 3

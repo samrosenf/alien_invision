@@ -67,7 +67,7 @@ class AlienInvasion:
         self.stats.game_active = True
         self.sb.prep_images()
         self._setup_level()
-        
+
         # Hide the mouse cursor.
         pygame.mouse.set_visible(False)
 
@@ -97,8 +97,8 @@ class AlienInvasion:
 
     def _create_fleet(self):
         """Create the fleet of enemies."""
-        # Create an enemy and find the number of enemies in a row.
-        # Spacing between each enemy is equal to one enemy width.
+        # Create an enemy according the the level map.
+        # Spacing between each enemy is equal to half an enemy width.
         level_data = load_level_data(self.stats.level)
 
         # Create the full fleet of enemies
@@ -108,10 +108,9 @@ class AlienInvasion:
                     self._create_enemy(x_idx, y_idx, level)
 
     def _create_enemy(self, x_idx, y_idx, level):
-        # Create an enemy and place it in the row.
+        """Create an enemy and place it in the right position in the grid."""
         enemy = Enemy(self, level)
         enemy_width, enemy_height = enemy.rect.size
-        # Place the enemy in the right position
         enemy.x = enemy_width + 1.5 * enemy_width * x_idx
         enemy.y = self.settings.fleet_y_start + enemy_height * y_idx
         enemy.rect.y = enemy.y
@@ -135,7 +134,7 @@ class AlienInvasion:
                 self.ship_bullets.remove(bullet)
 
         if self.enemies:
-            self._check_bullet_enemy_collisions()
+            self._check_player_bullets_enemy_collisions()
         else:
             self._start_new_level()
 
@@ -145,9 +144,9 @@ class AlienInvasion:
                                           pygame.sprite.collide_mask):
             self._ship_hit()
 
-    def _check_bullet_enemy_collisions(self):
-        # Check for any bullets that have hit enemies.
-        #   If so, get rid of the bullet and the enemy.
+    def _check_player_bullets_enemy_collisions(self):
+        """"Check for any bullets that have hit enemies.
+           If so, update enemy life, and remove if dead."""
         collisions = pygame.sprite.groupcollide(
             self.ship_bullets, self.enemies, True, False, pygame.sprite.collide_mask)
 
@@ -165,7 +164,7 @@ class AlienInvasion:
                         self.enemies.remove(enemy)
                     # Update the image according to the enemy's life
                     else:
-                        enemy.load_image()
+                        enemy.update_image()
             self.sb.prep_score()
             self.sb.check_high_score()
 
@@ -189,7 +188,6 @@ class AlienInvasion:
         else:
             self._lose_ship()
             self.stats.game_active = False
-            pygame.mouse.set_visible(True)
 
     def _lose_ship(self):
         """Update Ship when losing a ship"""
@@ -229,11 +227,11 @@ class AlienInvasion:
 
         # Draw the play button if the game is inactive.
         if not self.stats.game_active:
+            pygame.mouse.set_visible(True)
             self.play_button.draw_button()
-            # Draw winning
+            # Draw winning if won the game
             if self.stats.win_game:
                 self.sb.show_winning_text()
-                pygame.mouse.set_visible(True)
 
         pygame.display.flip()
 
@@ -249,7 +247,6 @@ class AlienInvasion:
         button_clicked = self.play_button.rect.collidepoint(mouse_pos)
         if button_clicked and not self.stats.game_active:
             # Reset the game settings.
-
             self._start_game()
 
     def _check_events(self):
@@ -257,18 +254,14 @@ class AlienInvasion:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self._save_high_score_and_exit()
-
             elif event.type == pygame.KEYDOWN:
                 self._check_keydown_events(event)
-
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
-
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
-
-            elif event.type == self.events.enemy_shooting_event.id and self.stats.game_active:
+            elif event.type == self.events.enemy_shooting.id and self.stats.game_active:
                 self._enemy_shoots()
 
     def _enemy_shoots(self):
