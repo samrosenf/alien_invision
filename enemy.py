@@ -22,6 +22,9 @@ class Enemy(Sprite):
         # Load image according to the enemy level
         self.load_image()
 
+    def drop_verticaly(self):
+        self.y += self.settings.fleet_drop_speed
+
     def update(self):
         """Move the enemy to the right."""
         self.x += (self.settings.enemy_speed *
