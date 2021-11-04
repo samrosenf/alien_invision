@@ -4,39 +4,39 @@ import pygame
 from pygame.sprite import Sprite
 
 
-class Alien(Sprite):
-    """A class to represent a single alien in the fleet."""
+class Enemy(Sprite):
+    """A class to represent a single enemy in the fleet."""
 
     def __init__(self, ai_game, level=1):
-        """Initialize the alien and set its starting position."""
+        """Initialize the enemy and set its starting position."""
         super().__init__()
         self.screen = ai_game.screen
         self.settings = ai_game.settings
         self.stats = ai_game.stats
 
-        # Setup life and lives of the alien
+        # Setup life and lives of the enemy
         self.x, self.y = 0, 0
         self.level = level
         self.life = level
 
-        # Load image according to the alien level
+        # Load image according to the enemy level
         self.load_image()
 
     def update(self):
-        """Move the alien to the right."""
-        self.x += (self.settings.alien_speed *
+        """Move the enemy to the right."""
+        self.x += (self.settings.enemy_speed *
                    self.settings.fleet_direction)
         self.rect.x = self.x
         self.rect.y = self.y
 
     def check_edges(self):
-        """Return True if alien is at the edge of the screen."""
+        """Return True if enemy is at the edge of the screen."""
         screen_rect = self.screen.get_rect()
         if self.rect.right >= screen_rect.right or self.rect.left <= 0:
             return True
 
     def load_image(self):
-        # Load the alien image and set its rect attritbute.
+        # Load the enemy image and set its rect attritbute.
         self.image = pygame.image.load(self._get_image_path()).convert_alpha()
         self.mask = pygame.mask.from_surface(self.image)
         self.rect = self.image.get_rect()
@@ -56,7 +56,7 @@ class Alien(Sprite):
             8: 'pink',
             9: 'red',
         }
-        alien_color = image_color_dict.get(
+        enemy_color = image_color_dict.get(
             self.life, 'red')  # if level don't exist use red
-        image_file_name = alien_color + '_alien_ship.png'
+        image_file_name = enemy_color + '_enemy_ship.png'
         return os.path.join('images', image_file_name)

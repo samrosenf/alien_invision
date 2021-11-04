@@ -17,7 +17,7 @@ class Settings:
         self.ship_limit = 3
 
         # Bullet settings
-        self.bullet_width = 3000
+        self.bullet_width = 3
         self.bullet_height = 15
         self.bullet_color = (224, 222, 58)
         self.bullets_allowed = 10
@@ -29,7 +29,7 @@ class Settings:
         # How quickly the game speeds up
         self.speedup_scale = 1.2
 
-        # How quickly the alien point values increase
+        # How quickly the enemy point values increase
         self.score_scale = 1.5
 
         # Highscore file
@@ -44,7 +44,7 @@ class Settings:
         """Initialize settings that change throghout the game."""
         self.ship_speed = 5.0
         self.bullet_speed = 3.0
-        self.alien_speed = 2.5
+        self.enemy_speed = 2.5
 
         # fleet_direction of 1 represnts right; -1 represnts left.
         self.fleet_direction = 1
@@ -54,9 +54,9 @@ class Settings:
         self.kill_points = 100
 
     def increase_speed(self):
-        """Increase speed settings and alien point values."""
+        """Increase speed settings and enemy point values."""
         self.ship_speed *= self.speedup_scale
         self.bullet_speed *= self.speedup_scale
-        self.alien_speed *= self.speedup_scale
+        self.enemy_speed *= self.speedup_scale
 
-        self.alien_points = int(self.alien_points * self.score_scale)
+        self.enemy_points = int(self.enemy_points * self.score_scale)

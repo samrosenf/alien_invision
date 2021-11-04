@@ -11,7 +11,7 @@ from sound import Sound
 from button import Button
 from ship import Ship
 from bullet import Bullet
-from alien import Alien
+from enemy import Enemy
 
 
 class AlienInvasion:
@@ -36,7 +36,7 @@ class AlienInvasion:
 
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
-        self.aliens = pygame.sprite.Group()
+        self.enemies = pygame.sprite.Group()
 
         # Add music to the game.
         self.sound = Sound()
@@ -52,7 +52,7 @@ class AlienInvasion:
             if self.stats.game_active:
                 self.ship.update()
                 self._update_bullets()
-                self._update_aliens()
+                self._update_enemies()
 
             self._update_screen()
 
@@ -63,8 +63,8 @@ class AlienInvasion:
         self.stats.game_active = True
         self.sb.prep_images()
 
-        # Get rid of any remaining aliens and bullets.
-        self.aliens.empty()
+        # Get rid of any remaining enemies and bullets.
+        self.enemies.empty()
         self.bullets.empty()
 
         # Create a new fleet and center the ship.
@@ -89,8 +89,8 @@ class AlienInvasion:
             # Play win sound TODO
 
     def _setup_level(self):
-        # Get rid of any remaining aliens and bullets.
-        self.aliens.empty()
+        # Get rid of any remaining enemies and bullets.
+        self.enemies.empty()
         self.bullets.empty()
 
         # Create a new fleet and center the ship.
@@ -98,27 +98,27 @@ class AlienInvasion:
         self.ship.center_ship()
 
     def _create_fleet(self):
-        """Create the fleet of aliens."""
-        # Create an alien and find the number of aliens in a row.
-        # Spacing between each alien is equal to one alien width.
+        """Create the fleet of enemies."""
+        # Create an enemy and find the number of enemies in a row.
+        # Spacing between each enemy is equal to one enemy width.
         level_data = load_level_data(self.stats.level)
 
-        # Create the full fleet of aliens
+        # Create the full fleet of enemies
         for y_idx, row in enumerate(level_data):
             for x_idx, level in enumerate(row):
                 if level:
-                    self._create_alien(x_idx, y_idx, level)
+                    self._create_enemy(x_idx, y_idx, level)
 
-    def _create_alien(self, x_idx, y_idx, level):
-        # Create an alien and place it in the row.
-        alien = Alien(self, level)
-        alien_width, alien_height = alien.rect.size
-        # Place the alien in the right position
-        alien.x = alien_width + 1.5 * alien_width * x_idx
-        alien.y = self.settings.fleet_y_start + alien_height * y_idx
-        alien.rect.y = alien.y
-        alien.rect.x = alien.x
-        self.aliens.add(alien)
+    def _create_enemy(self, x_idx, y_idx, level):
+        # Create an enemy and place it in the row.
+        enemy = Enemy(self, level)
+        enemy_width, enemy_height = enemy.rect.size
+        # Place the enemy in the right position
+        enemy.x = enemy_width + 1.5 * enemy_width * x_idx
+        enemy.y = self.settings.fleet_y_start + enemy_height * y_idx
+        enemy.rect.y = enemy.y
+        enemy.rect.x = enemy.x
+        self.enemies.add(enemy)
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets"""
@@ -129,47 +129,47 @@ class AlienInvasion:
         for bullet in self.bullets.copy():
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
-        if self.aliens:
-            self._check_bullet_alien_collisions()
+        if self.enemies:
+            self._check_bullet_enemy_collisions()
         else:
             self._start_new_level()
 
-    def _check_bullet_alien_collisions(self):
-        # Check for any bullets that have hit aliens.
-        #   If so, get rid of the bullet and the alien.
+    def _check_bullet_enemy_collisions(self):
+        # Check for any bullets that have hit enemies.
+        #   If so, get rid of the bullet and the enemy.
         collisions = pygame.sprite.groupcollide(
-            self.bullets, self.aliens, True, False, pygame.sprite.collide_mask)
+            self.bullets, self.enemies, True, False, pygame.sprite.collide_mask)
 
         if collisions:
             self.sound.play_boom_sound()
-            for aliens in collisions.values():
+            for enemies in collisions.values():
                 # Every shot gain points.
-                self.stats.score += self.settings.hit_points * len(aliens)
-                for alien in aliens:
-                    # Alien has been hit, decreas one life of the alien
-                    alien.life -= 1
-                    if alien.life <= 0:
-                        # Update score and remove the alien
-                        self.stats.score += self.settings.kill_points * alien.level
-                        self.aliens.remove(alien)
-                    # Update the image according to the alien's life
+                self.stats.score += self.settings.hit_points * len(enemies)
+                for enemy in enemies:
+                    # Enemy has been hit, decreas one life of the enemy
+                    enemy.life -= 1
+                    if enemy.life <= 0:
+                        # Update score and remove the enemy
+                        self.stats.score += self.settings.kill_points * enemy.level
+                        self.enemies.remove(enemy)
+                    # Update the image according to the enemy's life
                     else:
-                        alien.load_image()
+                        enemy.load_image()
             self.sb.prep_score()
             self.sb.check_high_score()
 
-    def _check_aliens_at_bottom(self):
-        """Check if any aliens have reached the bottom of the screen."""
+    def _check_enemies_at_bottom(self):
+        """Check if any enemies have reached the bottom of the screen."""
         screen_rect = self.screen.get_rect()
-        for alien in self.aliens.sprites():
-            if alien.rect.bottom >= screen_rect.bottom:
+        for enemy in self.enemies.sprites():
+            if enemy.rect.bottom >= screen_rect.bottom:
                 # Treat this the same as if the ship got hit.
                 self._ship_hit()
                 break
 
     def _ship_hit(self):
-        """Respond to the ship being hit by an alien 
-            or aliens reached the bottom of the screen."""
+        """Respond to the ship being hit by an enemy 
+            or enemies reached the bottom of the screen."""
         if self.stats.ships_left > 1:
             self._lose_ship()
             self._setup_level()
@@ -187,21 +187,21 @@ class AlienInvasion:
         self.sb.prep_ships()
         self.sound.play_ship_hit_sound()
 
-    def _update_aliens(self):
+    def _update_enemies(self):
         """
         Check if the fleet is at an edge,
-         then update the positions of all aliens in the fleet.
+         then update the positions of all enemies in the fleet.
         """
         self._check_fleet_edges()
-        self.aliens.update()
+        self.enemies.update()
 
-        # Look for alien-ship collisions.
-        if pygame.sprite.spritecollideany(self.ship, self.aliens,
+        # Look for enemy-ship collisions.
+        if pygame.sprite.spritecollideany(self.ship, self.enemies,
                                           pygame.sprite.collide_mask):
             self._ship_hit()
 
-        # Look for aliens hitting the bottom of the screen.
-        self._check_aliens_at_bottom()
+        # Look for enemies hitting the bottom of the screen.
+        self._check_enemies_at_bottom()
 
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen"""
@@ -209,7 +209,7 @@ class AlienInvasion:
         self.ship.blitme()
         for bullet in self.bullets.sprites():
             bullet.draw_bullet()
-        self.aliens.draw(self.screen)
+        self.enemies.draw(self.screen)
 
         # Draw the score information.
         self.sb.show_score()
@@ -289,16 +289,16 @@ class AlienInvasion:
             self.bullets.add(new_bullet)
 
     def _check_fleet_edges(self):
-        """Respond appropriately if any aliens have reached an edge."""
-        for alien in self.aliens.sprites():
-            if alien.check_edges():
+        """Respond appropriately if any enemies have reached an edge."""
+        for enemy in self.enemies.sprites():
+            if enemy.check_edges():
                 self._change_fleet_direction()
                 break
 
     def _change_fleet_direction(self):
         """Drop the entire fleet and change the fleet's direction."""
-        for alien in self.aliens.sprites():
-            alien.y += self.settings.fleet_drop_speed
+        for enemy in self.enemies.sprites():
+            enemy.y += self.settings.fleet_drop_speed
         self.settings.fleet_direction *= -1
 
 
