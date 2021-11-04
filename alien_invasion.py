@@ -1,16 +1,18 @@
 import sys
 from time import sleep
+import random
 
 import pygame
 
 from settings import Settings
 from game_stats import GameStats
 from scoreboard import Scoreboard
+from events import Events
 from levels import load_level_data
 from sound import Sound
 from button import Button
 from ship import Ship
-from bullet import Bullet
+from bullet import PlayerBullet, EnemyBullet
 from enemy import Enemy
 
 
@@ -33,10 +35,12 @@ class AlienInvasion:
         # Create an instance to store the game statistics & a scoreboard.
         self.stats = GameStats(self)
         self.sb = Scoreboard(self)
+        self.events = Events(self)
 
         self.ship = Ship(self)
-        self.bullets = pygame.sprite.Group()
+        self.ship_bullets = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()
+        self.enemies_bullets = pygame.sprite.Group()
 
         # Add music to the game.
         self.sound = Sound()
@@ -62,15 +66,8 @@ class AlienInvasion:
         self.stats.reset_stats()
         self.stats.game_active = True
         self.sb.prep_images()
-
-        # Get rid of any remaining enemies and bullets.
-        self.enemies.empty()
-        self.bullets.empty()
-
-        # Create a new fleet and center the ship.
-        self._create_fleet()
-        self.ship.center_ship()
-
+        self._setup_level()
+        
         # Hide the mouse cursor.
         pygame.mouse.set_visible(False)
 
@@ -91,7 +88,8 @@ class AlienInvasion:
     def _setup_level(self):
         # Get rid of any remaining enemies and bullets.
         self.enemies.empty()
-        self.bullets.empty()
+        self.ship_bullets.empty()
+        self.enemies_bullets.empty()
 
         # Create a new fleet and center the ship.
         self._create_fleet()
@@ -123,22 +121,35 @@ class AlienInvasion:
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets"""
         # Update bullet positions.
-        self.bullets.update()
+        self.ship_bullets.update()
+        self.enemies_bullets.update()
 
-        # Get rid of bullets that have disappeared.
-        for bullet in self.bullets.copy():
+        # Get rid of enemy bullets that have disappeared.
+        for bullet in self.enemies_bullets.copy():
+            if bullet.rect.top >= self.settings.screen_height:
+                self.enemies_bullets.remove(bullet)
+        self._check_enemy_bullets_ship_collisions()
+        # Get rid of player bullets that have disappeared.
+        for bullet in self.ship_bullets.copy():
             if bullet.rect.bottom <= 0:
-                self.bullets.remove(bullet)
+                self.ship_bullets.remove(bullet)
+
         if self.enemies:
             self._check_bullet_enemy_collisions()
         else:
             self._start_new_level()
 
+    def _check_enemy_bullets_ship_collisions(self):
+        """Check if enemy bullets hit the ship"""
+        if pygame.sprite.spritecollideany(self.ship, self.enemies_bullets,
+                                          pygame.sprite.collide_mask):
+            self._ship_hit()
+
     def _check_bullet_enemy_collisions(self):
         # Check for any bullets that have hit enemies.
         #   If so, get rid of the bullet and the enemy.
         collisions = pygame.sprite.groupcollide(
-            self.bullets, self.enemies, True, False, pygame.sprite.collide_mask)
+            self.ship_bullets, self.enemies, True, False, pygame.sprite.collide_mask)
 
         if collisions:
             self.sound.play_boom_sound()
@@ -207,7 +218,9 @@ class AlienInvasion:
         """Update images on the screen, and flip to the new screen"""
         self.screen.blit(self.settings.bg, (0, 0))
         self.ship.blitme()
-        for bullet in self.bullets.sprites():
+        for bullet in self.ship_bullets.sprites():
+            bullet.draw_bullet()
+        for bullet in self.enemies_bullets.sprites():
             bullet.draw_bullet()
         self.enemies.draw(self.screen)
 
@@ -255,6 +268,14 @@ class AlienInvasion:
                 mouse_pos = pygame.mouse.get_pos()
                 self._check_play_button(mouse_pos)
 
+            elif event.type == self.events.enemy_shooting_event.id and self.stats.game_active:
+                self._enemy_shoots()
+
+    def _enemy_shoots(self):
+        selected_alien = random.choice(self.enemies.sprites())
+        new_bullet = EnemyBullet(self, selected_alien)
+        self.enemies_bullets.add(new_bullet)
+
     def _check_keyup_events(self, event):
         if event.key == pygame.K_RIGHT:
             self.ship.moving_right = False
@@ -283,10 +304,11 @@ class AlienInvasion:
 
     def _fire_bullet(self):
         """Create a new bullet and add it to the bullets group."""
-        bullets_available = len(self.bullets) < self.settings.bullets_allowed
+        bullets_available = len(
+            self.ship_bullets) < self.settings.bullets_allowed
         if bullets_available and self.stats.game_active:
-            new_bullet = Bullet(self)
-            self.bullets.add(new_bullet)
+            new_bullet = PlayerBullet(self)
+            self.ship_bullets.add(new_bullet)
 
     def _check_fleet_edges(self):
         """Respond appropriately if any enemies have reached an edge."""

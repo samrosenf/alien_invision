@@ -11,7 +11,7 @@ class Settings:
 
         # Game settings
         self.FPS = 60
-        self.MAX_LEVEL = 4
+        self.MAX_LEVEL = 2
 
         # Ship settings
         self.ship_limit = 3
@@ -19,12 +19,22 @@ class Settings:
         # Bullet settings
         self.bullet_width = 3
         self.bullet_height = 15
-        self.bullet_color = (224, 222, 58)
+
+        # Player bullet settings
+        self.player_bullet_color = (224, 222, 58)
         self.bullets_allowed = 10
 
-        # Alien settings
+        # Enemy bullet settings
+        self.enemy_bullet_color = (255, 0, 0)
+
+        # Enemy settings
         self.fleet_y_start = 90
         self.fleet_drop_speed = 10
+        self.bullet_gen_time = 2000 # in ms
+        self.bullet_rand_gen_time = 200 # in ms
+
+        # Events IDs
+        self.enemy_shooting_id = 1
 
         # How quickly the game speeds up
         self.speedup_scale = 1.2
@@ -43,8 +53,9 @@ class Settings:
     def initialize_dynamic_settings(self):
         """Initialize settings that change throghout the game."""
         self.ship_speed = 5.0
-        self.bullet_speed = 3.0
+        self.player_bullet_speed = 3.0
         self.enemy_speed = 2.5
+        self.enemy_bullet_speed = 2.0
 
         # fleet_direction of 1 represnts right; -1 represnts left.
         self.fleet_direction = 1
@@ -56,7 +67,8 @@ class Settings:
     def increase_speed(self):
         """Increase speed settings and enemy point values."""
         self.ship_speed *= self.speedup_scale
-        self.bullet_speed *= self.speedup_scale
+        self.player_bullet_speed *= self.speedup_scale
+        self.enemy_bullet_speed *= self.speedup_scale
         self.enemy_speed *= self.speedup_scale
 
         self.enemy_points = int(self.enemy_points * self.score_scale)
