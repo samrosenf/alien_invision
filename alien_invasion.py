@@ -311,9 +311,10 @@ class AlienInvasion:
                 self.powerups.add(power(self))
 
     def _enemy_shoots(self):
-        selected_alien = random.choice(self.enemies.sprites())
-        new_bullet = EnemyBullet(self, selected_alien)
-        self.enemies_bullets.add(new_bullet)
+        if self.enemies:
+            selected_alien = random.choice(self.enemies.sprites())
+            new_bullet = EnemyBullet(self, selected_alien)
+            self.enemies_bullets.add(new_bullet)
 
     def _check_keyup_events(self, event):
         if event.key == pygame.K_RIGHT:
